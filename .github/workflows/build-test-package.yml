@@ -70,6 +70,9 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    outputs:
+      is_alpha: ${{ steps.check-is-alpha.outputs.is_alpha }}
+
     steps:
       - name: "Checkout Commit - ${{ inputs.sha }}"
         uses: actions/checkout@v3
@@ -102,6 +105,16 @@ jobs:
         run: |
           check-wheel-contents dist/*.whl --ignore W007,W008
 
+      - name: "Check If This Is An Alpha Version"
+        id: check-is-alpha
+        run: |
+          export is_alpha=0
+          if [[ "$(ls -lh dist/)" == *"a1"* ]]; 
+          then 
+          export is_alpha=1; 
+          fi
+          echo "is_alpha=$is_alpha" >> $GITHUB_OUTPUT
+      
       - name: "Upload Build Artifact - ${{ inputs.version_number }}"
         uses: actions/upload-artifact@v3
         with:
@@ -113,6 +126,8 @@ jobs:
 
   test-build:
     name: Verify Packages
+
+    if: needs.build.outputs.is_alpha == 0
 
     needs: [unit, build]
 

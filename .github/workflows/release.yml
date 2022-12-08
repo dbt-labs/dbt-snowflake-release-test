@@ -59,7 +59,7 @@ jobs:
 
     needs: build-test-package
 
-    uses: dbt-labs/dbt-release/.github/workflows/_github-release.yml@main
+    uses: dbt-labs/dbt-release/.github/workflows/github-release.yml@main
 
     with:
       sha: ${{ inputs.sha }}

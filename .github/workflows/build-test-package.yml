@@ -35,35 +35,35 @@ jobs:
           echo Python target version:              ${{ env.PYTHON_TARGET_VERSION }}
           echo Artifact retention days:            ${{ env.ARTIFACT_RETENTION_DAYS }}
 
-  unit:
-    name: Unit Test
+  # unit:
+  #   name: Unit Test
 
-    runs-on: ubuntu-latest
+  #   runs-on: ubuntu-latest
 
-    env:
-      TOXENV: "unit"
+  #   env:
+  #     TOXENV: "unit"
 
-    steps:
-      - name: "Checkout Commit - ${{ inputs.sha }}"
-        uses: actions/checkout@v3
-        with:
-          persist-credentials: false
-          ref: ${{ github.event.inputs.sha }}
+  #   steps:
+  #     - name: "Checkout Commit - ${{ inputs.sha }}"
+  #       uses: actions/checkout@v3
+  #       with:
+  #         persist-credentials: false
+  #         ref: ${{ github.event.inputs.sha }}
 
-      - name: "Set up Python - ${{ env.PYTHON_TARGET_VERSION }}"
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ env.PYTHON_TARGET_VERSION }}
+  #     - name: "Set up Python - ${{ env.PYTHON_TARGET_VERSION }}"
+  #       uses: actions/setup-python@v4
+  #       with:
+  #         python-version: ${{ env.PYTHON_TARGET_VERSION }}
 
-      - name: "Install Python Dependencies"
-        run: |
-          python -m pip install --user --upgrade pip
-          python -m pip install tox
-          python -m pip --version
-          python -m tox --version
+  #     - name: "Install Python Dependencies"
+  #       run: |
+  #         python -m pip install --user --upgrade pip
+  #         python -m pip install tox
+  #         python -m pip --version
+  #         python -m tox --version
 
-      - name: "Run Tox"
-        run: tox
+  #     - name: "Run Tox"
+  #       run: tox
 
   build:
     name: Build Packages
@@ -129,7 +129,7 @@ jobs:
 
     if: needs.build.outputs.is_alpha == 0
 
-    needs: [unit, build]
+    needs: [build]
 
     runs-on: ubuntu-latest
 

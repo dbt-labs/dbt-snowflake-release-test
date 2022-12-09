@@ -48,7 +48,7 @@ jobs:
   build-test-package:
     name: Build, Test, and Package
 
-    uses: dbt-labs/dbt-snowflake-release-test/.github/workflows/build-test-package.yml@users/alexander-smolyakov/fix-build-test-package-workflows
+    uses: dbt-labs/dbt-snowflake-release-test/.github/workflows/build-test-package.yml@main
 
     with:
       sha: ${{ inputs.sha }}

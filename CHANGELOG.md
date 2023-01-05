@@ -21,6 +21,12 @@
 ### Contributors
 - [@b-per](https://github.com/b-per) ([#349](https://github.com/dbt-labs/dbt-snowflake/pull/349))
 - [@joshuataylor](https://github.com/joshuataylor) ([#294](https://github.com/dbt-labs/dbt-snowflake/pull/294))
+## dbt-snowflake 1.4.0-a3 - January 05, 2023
+### Features
+- incremental predicates support ([#5680](https://github.com/dbt-labs/dbt-snowflake/issues/5680), [#310](https://github.com/dbt-labs/dbt-snowflake/pull/310))
+
+### Contributors
+- [@dave-connors-3](https://github.com/dave-connors-3) ([#310](https://github.com/dbt-labs/dbt-snowflake/pull/310))
 ## Previous Releases
 For information on prior major and minor releases, see their changelogs:
 - [1.3](https://github.com/dbt-labs/dbt-snowflake/blob/1.3.latest/CHANGELOG.md)

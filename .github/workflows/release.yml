@@ -12,7 +12,6 @@ name: Release to GitHub and PyPi
 
 on:
   workflow_dispatch:
-  workflow_call:
     inputs:
       sha:
         description: "The last commit sha in the release"

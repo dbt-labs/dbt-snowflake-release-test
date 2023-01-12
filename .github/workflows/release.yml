@@ -77,45 +77,20 @@ jobs:
           echo AWS S3 bucket name:                 ${{ inputs.s3_bucket_name }}
           echo Package test command:               ${{ inputs.package_test_command }}
           echo Test run:                           ${{ inputs.test_run }}
-
-  test-json:
-    runs-on: ubuntu-latest
-    outputs:
-      json: ${{ steps.config.outputs.json }}
-    steps:
-      - name: "Checkout ${{ github.repository }} Branch ${{ inputs.target_branch }}"
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ inputs.target_branch }}
-
-      - name: view the secrets context
-        shell: bash
-        run: echo "$SECRETS_CONTEXT"
-        env:
-          SECRETS_CONTEXT: ${{ toJson(secrets) }}
-      - name: "Check env"
-        run: echo ${{ env.JSON }}
-    
-  # check-json:
-  #   runs-on: ubuntu-latest
-  #   needs: test-json
-  #   steps:
-  #     - name: "Check env"
-  #       run: echo ${{ needs.json.output. }}
   
-  # bump-version-generate-changelog:
-  #   name: Bump package version, Generate changelog
+  bump-version-generate-changelog:
+    name: Bump package version, Generate changelog
 
-  #   uses: dbt-labs/dbt-release/.github/workflows/release-prep.yml@main
+    uses: dbt-labs/dbt-release/.github/workflows/release-prep.yml@uesrs/alexander-smolyakov/test-env-script
 
-  #   with:
-  #     sha: ${{ inputs.sha }}
-  #     version_number: ${{ inputs.version_number }}
-  #     target_branch: ${{ inputs.target_branch }}
-  #     env_setup_script_path: ""
-  #     test_run: ${{ inputs.test_run }}
+    with:
+      sha: ${{ inputs.sha }}
+      version_number: ${{ inputs.version_number }}
+      target_branch: ${{ inputs.target_branch }}
+      env_setup_script_path: ""
+      test_run: ${{ inputs.test_run }}
 
-  #   secrets: inherit
+    secrets: inherit
 
   # log-outputs-bump-version-generate-changelog:
   #   name: "[Log output] Bump package version, Generate changelog"

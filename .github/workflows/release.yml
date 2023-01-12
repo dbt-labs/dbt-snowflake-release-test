@@ -58,6 +58,10 @@ defaults:
   run:
     shell: bash
 
+
+env: 
+  JSON: ""
+
 jobs:
   log-inputs:
     name: Log Inputs
@@ -74,98 +78,122 @@ jobs:
           echo Package test command:               ${{ inputs.package_test_command }}
           echo Test run:                           ${{ inputs.test_run }}
 
-  bump-version-generate-changelog:
-    name: Bump package version, Generate changelog
-
-    uses: dbt-labs/dbt-release/.github/workflows/release-prep.yml@main
-
-    with:
-      sha: ${{ inputs.sha }}
-      version_number: ${{ inputs.version_number }}
-      target_branch: ${{ inputs.target_branch }}
-      env_setup_script_path: ""
-      test_run: ${{ inputs.test_run }}
-
-    secrets: inherit
-
-  log-outputs-bump-version-generate-changelog:
-    name: "[Log output] Bump package version, Generate changelog"
-    if: ${{ !failure() && !cancelled() }}
-
-    needs: [bump-version-generate-changelog]
-
+  test-json:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Print variables
-        run: |
-          echo Final SHA     : ${{ needs.bump-version-generate-changelog.outputs.final_sha }}
-          echo Changelog path: ${{ needs.bump-version-generate-changelog.outputs.changelog_path }}
+      - name: "Setup Environment Variables - ./${{ inputs.env_setup_script_path }}"
+        run: source ./${{ inputs.env_setup_script_path }}
+        env:
+          SNOWFLAKE_TEST_ACCOUNT: ${{ secrets.SNOWFLAKE_TEST_ACCOUNT }}
+          SNOWFLAKE_TEST_PASSWORD: ${{ secrets.SNOWFLAKE_TEST_PASSWORD }}
+          SNOWFLAKE_TEST_USER: ${{ secrets.SNOWFLAKE_TEST_USER }}
+          SNOWFLAKE_TEST_WAREHOUSE: ${{ secrets.SNOWFLAKE_TEST_WAREHOUSE }}
+          SNOWFLAKE_TEST_OAUTH_REFRESH_TOKEN: ${{ secrets.SNOWFLAKE_TEST_OAUTH_REFRESH_TOKEN }}
+          SNOWFLAKE_TEST_OAUTH_CLIENT_ID: ${{ secrets.SNOWFLAKE_TEST_OAUTH_CLIENT_ID }}
+          SNOWFLAKE_TEST_OAUTH_CLIENT_SECRET: ${{ secrets.SNOWFLAKE_TEST_OAUTH_CLIENT_SECRET }}
+          SNOWFLAKE_TEST_ALT_DATABASE: ${{ secrets.SNOWFLAKE_TEST_ALT_DATABASE }}
+          SNOWFLAKE_TEST_ALT_WAREHOUSE: ${{ secrets.SNOWFLAKE_TEST_ALT_WAREHOUSE }}
+          SNOWFLAKE_TEST_DATABASE: ${{ secrets.SNOWFLAKE_TEST_DATABASE }}
+          SNOWFLAKE_TEST_QUOTED_DATABASE: ${{ secrets.SNOWFLAKE_TEST_QUOTED_DATABASE }}
+          SNOWFLAKE_TEST_ROLE: ${{ secrets.SNOWFLAKE_TEST_ROLE }}
+          DBT_TEST_USER_1: dbt_test_role_1
+          DBT_TEST_USER_2: dbt_test_role_2
+          DBT_TEST_USER_3: dbt_test_role_3
+      - name: "Check env"
+        run: echo ${{ env.JSON }}
+  
+  # bump-version-generate-changelog:
+  #   name: Bump package version, Generate changelog
 
-  build-test-package:
-    name: Build, Test, Package
-    if: ${{ !failure() && !cancelled() }}
-    needs: [bump-version-generate-changelog]
+  #   uses: dbt-labs/dbt-release/.github/workflows/release-prep.yml@main
 
-    uses: dbt-labs/dbt-release/.github/workflows/build.yml@main
+  #   with:
+  #     sha: ${{ inputs.sha }}
+  #     version_number: ${{ inputs.version_number }}
+  #     target_branch: ${{ inputs.target_branch }}
+  #     env_setup_script_path: ""
+  #     test_run: ${{ inputs.test_run }}
 
-    with:
-      sha: ${{ needs.bump-version-generate-changelog.outputs.final_sha }}
-      version_number: ${{ inputs.version_number }}
-      changelog_path: ${{ needs.bump-version-generate-changelog.outputs.changelog_path }}
-      build_script_path: ${{ inputs.build_script_path }}
-      s3_bucket_name: ${{ inputs.s3_bucket_name }}
-      package_test_command: ${{ inputs.package_test_command }}
-      test_run: ${{ inputs.test_run }}
+  #   secrets: inherit
 
-    secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.PRODUCTION_AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.PRODUCTION_AWS_SECRET_ACCESS_KEY }}
+  # log-outputs-bump-version-generate-changelog:
+  #   name: "[Log output] Bump package version, Generate changelog"
+  #   if: ${{ !failure() && !cancelled() }}
 
-  github-release:
-    name: GitHub Release
-    if: ${{ !failure() && !cancelled() }}
+  #   needs: [bump-version-generate-changelog]
 
-    needs: [bump-version-generate-changelog, build-test-package]
+  #   runs-on: ubuntu-latest
 
-    uses: dbt-labs/dbt-release/.github/workflows/github-release.yml@main
+  #   steps:
+  #     - name: Print variables
+  #       run: |
+  #         echo Final SHA     : ${{ needs.bump-version-generate-changelog.outputs.final_sha }}
+  #         echo Changelog path: ${{ needs.bump-version-generate-changelog.outputs.changelog_path }}
 
-    with:
-      sha: ${{ needs.bump-version-generate-changelog.outputs.final_sha }}
-      version_number: ${{ inputs.version_number }}
-      changelog_path: ${{ needs.bump-version-generate-changelog.outputs.changelog_path }}
-      test_run: ${{ inputs.test_run }}
+  # build-test-package:
+  #   name: Build, Test, Package
+  #   if: ${{ !failure() && !cancelled() }}
+  #   needs: [bump-version-generate-changelog]
 
-  pypi-release:
-    name: PyPI Release
+  #   uses: dbt-labs/dbt-release/.github/workflows/build.yml@main
 
-    needs: [github-release]
+  #   with:
+  #     sha: ${{ needs.bump-version-generate-changelog.outputs.final_sha }}
+  #     version_number: ${{ inputs.version_number }}
+  #     changelog_path: ${{ needs.bump-version-generate-changelog.outputs.changelog_path }}
+  #     build_script_path: ${{ inputs.build_script_path }}
+  #     s3_bucket_name: ${{ inputs.s3_bucket_name }}
+  #     package_test_command: ${{ inputs.package_test_command }}
+  #     test_run: ${{ inputs.test_run }}
 
-    uses: dbt-labs/dbt-release/.github/workflows/pypi-release.yml@main
+  #   secrets:
+  #     AWS_ACCESS_KEY_ID: ${{ secrets.PRODUCTION_AWS_ACCESS_KEY_ID }}
+  #     AWS_SECRET_ACCESS_KEY: ${{ secrets.PRODUCTION_AWS_SECRET_ACCESS_KEY }}
 
-    with:
-      version_number: ${{ inputs.version_number }}
-      test_run: ${{ inputs.test_run }}
+  # github-release:
+  #   name: GitHub Release
+  #   if: ${{ !failure() && !cancelled() }}
 
-    secrets:
-      PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-      TEST_PYPI_API_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
+  #   needs: [bump-version-generate-changelog, build-test-package]
 
-  slack-notification:
-    name: Slack Notification
-    if: ${{ failure() }}
+  #   uses: dbt-labs/dbt-release/.github/workflows/github-release.yml@main
 
-    needs:
-      [
-        bump-version-generate-changelog,
-        build-test-package,
-        github-release,
-        pypi-release,
-      ]
+  #   with:
+  #     sha: ${{ needs.bump-version-generate-changelog.outputs.final_sha }}
+  #     version_number: ${{ inputs.version_number }}
+  #     changelog_path: ${{ needs.bump-version-generate-changelog.outputs.changelog_path }}
+  #     test_run: ${{ inputs.test_run }}
 
-    uses: dbt-labs/dbt-release/.github/workflows/slack-post-notification.yml@main
-    with:
-      status: "failure"
+  # pypi-release:
+  #   name: PyPI Release
 
-    secrets:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_TEST_CHANNEL }}
+  #   needs: [github-release]
+
+  #   uses: dbt-labs/dbt-release/.github/workflows/pypi-release.yml@main
+
+  #   with:
+  #     version_number: ${{ inputs.version_number }}
+  #     test_run: ${{ inputs.test_run }}
+
+  #   secrets:
+  #     PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+  #     TEST_PYPI_API_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
+
+  # slack-notification:
+  #   name: Slack Notification
+  #   if: ${{ failure() }}
+
+  #   needs:
+  #     [
+  #       bump-version-generate-changelog,
+  #       build-test-package,
+  #       github-release,
+  #       pypi-release,
+  #     ]
+
+  #   uses: dbt-labs/dbt-release/.github/workflows/slack-post-notification.yml@main
+  #   with:
+  #     status: "failure"
+
+  #   secrets:
+  #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_TEST_CHANNEL }}

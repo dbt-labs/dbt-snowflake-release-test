@@ -81,6 +81,11 @@ jobs:
   test-json:
     runs-on: ubuntu-latest
     steps:
+      - name: "Checkout ${{ github.repository }} Branch ${{ inputs.target_branch }}"
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.target_branch }}
+
       - name: "Setup Environment Variables - ./${{ inputs.env_setup_script_path }}"
         run: source ./${{ inputs.env_setup_script_path }}
         env:

@@ -1,16 +1,10 @@
 #!/bin/bash
+# Set TOXENV environment variable for subsequent steps
+echo "TOXENV=integration-snowflake" >> $GITHUB_ENV
+# Set INTEGRATION_TESTS_SECRETS_PREFIX environment variable for subsequent steps
+# All GH secrets that have this prefix will be set as environment variables
+echo "INTEGRATION_TESTS_SECRETS_PREFIX=SNOWFLAKE_TEST" >> $GITHUB_ENV
+# Set environment variables required for integration tests
 echo "DBT_TEST_USER_1=dbt_test_role_1" >> $GITHUB_ENV
 echo "DBT_TEST_USER_2=dbt_test_role_2" >> $GITHUB_ENV
 echo "DBT_TEST_USER_3=dbt_test_role_3" >> $GITHUB_ENV
-echo "SNOWFLAKE_TEST_ACCOUNT=${{ secrets.SNOWFLAKE_TEST_ACCOUNT }}" >> $GITHUB_ENV
-echo "SNOWFLAKE_TEST_PASSWORD=${{ secrets.SNOWFLAKE_TEST_PASSWORD }}" >> $GITHUB_ENV
-echo "SNOWFLAKE_TEST_USER=${{ secrets.SNOWFLAKE_TEST_USER }}" >> $GITHUB_ENV
-echo "SNOWFLAKE_TEST_WAREHOUSE=${{ secrets.SNOWFLAKE_TEST_WAREHOUSE }}" >> $GITHUB_ENV
-echo "SNOWFLAKE_TEST_OAUTH_REFRESH_TOKEN=${{ secrets.SNOWFLAKE_TEST_OAUTH_REFRESH_TOKEN }}" >> $GITHUB_ENV
-echo "SNOWFLAKE_TEST_OAUTH_CLIENT_ID=${{ secrets.SNOWFLAKE_TEST_OAUTH_CLIENT_ID }}" >> $GITHUB_ENV
-echo "SNOWFLAKE_TEST_OAUTH_CLIENT_SECRET=${{ secrets.SNOWFLAKE_TEST_OAUTH_CLIENT_SECRET }}" >> $GITHUB_ENV
-echo "SNOWFLAKE_TEST_ALT_DATABASE=${{ secrets.SNOWFLAKE_TEST_ALT_DATABASE }}" >> $GITHUB_ENV
-echo "SNOWFLAKE_TEST_ALT_WAREHOUSE=${{ secrets.SNOWFLAKE_TEST_ALT_WAREHOUSE }}" >> $GITHUB_ENV
-echo "SNOWFLAKE_TEST_DATABASE=${{ secrets.SNOWFLAKE_TEST_DATABASE }}" >> $GITHUB_ENV
-echo "SNOWFLAKE_TEST_QUOTED_DATABASE=${{ secrets.SNOWFLAKE_TEST_QUOTED_DATABASE }}" >> $GITHUB_ENV
-echo "SNOWFLAKE_TEST_ROLE=${{ secrets.SNOWFLAKE_TEST_ROLE }}" >> $GITHUB_ENV

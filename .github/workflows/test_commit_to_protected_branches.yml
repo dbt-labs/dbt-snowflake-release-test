@@ -48,7 +48,7 @@ jobs:
         with:
           source_ref: ${{ steps.temp-branch.outputs.branch_name }}
           target_branch: ${{ matrix.branch }}
-          github_token: ${{ secrets.FISHTOWN_BOT_PAT }}
+          github_token: ${{ secrets.FISHTOWN_BOT_PAT }} # TODO: probably need to use a custom PAT to override ``.latest`` protection rules
           commit_message_template: "[Automated] Merged {source_ref} into target {target_branch} during release process"
 
       - name: "Remove Temp Branch - ${{ steps.temp-branch.outputs.branch_name }}"

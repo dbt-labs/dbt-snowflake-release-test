@@ -13,7 +13,7 @@ jobs:
   commit-to-protected-branch:
     strategy:
       matrix:
-        branch: [0.0.latest, 1.0.latest, 1.4.latest]
+        branch: [1.3.latest, 1.4.latest]
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout Branch - ${{ matrix.branch }}"
